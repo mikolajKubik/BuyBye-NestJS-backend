@@ -1,6 +1,6 @@
 import { Optional } from "@nestjs/common";
 import { Type } from "class-transformer";
-import { IsArray, IsDateString, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsString, IsUUID, ValidateNested } from "class-validator";
 import { CreateProductOrderDto } from "src/product-order/dto/create-product-order.dto";
 
 export class CreateOrderDto {
@@ -16,4 +16,8 @@ export class CreateOrderDto {
     @ValidateNested({ each: true })
     @Type(() => CreateProductOrderDto)
     products: CreateProductOrderDto[];
+
+    @IsString()
+    @IsNotEmpty()
+    statusName: string;
 }

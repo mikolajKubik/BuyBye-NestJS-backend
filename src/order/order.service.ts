@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductOrder } from 'src/product-order/entities/product-order.entity';
+import { Status } from 'src/status/entities/status.entity';
 
 @Injectable()
 export class OrderService {
@@ -13,6 +14,9 @@ export class OrderService {
     private dataSource: DataSource,
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
+
+    @InjectRepository(Status)
+    private statusRepository: Repository<Status>,
 
     // @InjectRepository(Product)
     // private productRepository: Repository<Product>,
@@ -43,6 +47,15 @@ export class OrderService {
   // }
 
   async createOrderWithProducts(orderDto: CreateOrderDto): Promise<Order> {
+    //Step 0: Get status
+    const status = await this.statusRepository.findOne({
+      where: { name: orderDto.statusName },
+    });
+
+    if (!status) {
+      throw new NotFoundException(`Category with name "${orderDto.statusName}" not found`);
+    }
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
