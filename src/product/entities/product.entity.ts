@@ -1,5 +1,6 @@
+import { Category } from "src/category/entities/category.entity";
 import { ProductOrder } from "src/product-order/entities/product-order.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Product {
@@ -7,15 +8,26 @@ export class Product {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ type: 'varchar', length: 255, nullable: false })
     name: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: false })
+    description: string;
+
+    @Column({ type: 'int', nullable: false })
     stock: number;
 
-    @Column('decimal', { precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
     price: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+    weight: number;
 
     @OneToMany(() => ProductOrder, (productOrder) => productOrder.product)
     productOrders: ProductOrder[];
+
+    @ManyToOne(() => Category, (category) => category.products)
+    category: Category;
+
+
 }

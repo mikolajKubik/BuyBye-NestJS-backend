@@ -8,6 +8,8 @@ import { Order } from './order/entities/order.entity';
 import { Product } from './product/entities/product.entity';
 import { ProductOrder } from './product-order/entities/product-order.entity';
 import { ProductOrderModule } from './product-order/product-order.module';
+import { CategoryModule } from './category/category.module';
+import { Category } from './category/entities/category.entity';
 
 @Module({
   imports: [
@@ -18,13 +20,14 @@ import { ProductOrderModule } from './product-order/product-order.module';
       username: 'aji-user',
       password: 'your_password',
       database: 'aji-db',
-      entities: [Order, Product, ProductOrder],
+      entities: [Order, Product, ProductOrder, Category],
       synchronize: true,
       
     }),
     OrderModule, 
     ProductModule,
-    ProductOrderModule
+    ProductOrderModule,
+    CategoryModule
     
   ],
   controllers: [AppController],

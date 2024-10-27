@@ -8,7 +8,7 @@ export class ProductOrder {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ type: 'int', unsigned: true, nullable: false })
     quantity: number;
 
     @ManyToOne(() => Product, (product) => product.productOrders)

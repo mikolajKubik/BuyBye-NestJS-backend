@@ -1,5 +1,8 @@
 import { Optional } from "@nestjs/common";
-import { IsDecimal, IsNumber, IsString, IsUUID, Max, max, MaxLength, Min } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDecimal, IsNotEmpty, IsNumber, IsString, IsUUID, Max, max, MaxLength, Min, ValidateNested } from "class-validator";
+import { CreateCategoryDto } from "src/category/dto/create-category.dto";
+import { Category } from "src/category/entities/category.entity";
 
 export class CreateProductDto {
     // @Optional()
@@ -21,4 +24,8 @@ export class CreateProductDto {
     @Min(0) // , { message: 'Price must be a positive number' }
     @Max(99999999.99)  //, { message: 'Price cannot exceed 99999999.99' }
     price: number;
+
+    @IsString()
+    @IsNotEmpty()
+    categoryName: string;
 }
