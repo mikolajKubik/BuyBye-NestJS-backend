@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Order } from './entities/order.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductOrder } from 'src/product-order/entities/product-order.entity';
 import { Status } from 'src/status/entities/status.entity';
+import { UpdateProductOrderDto } from 'src/product-order/dto/update-product-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -21,8 +22,8 @@ export class OrderService {
     // @InjectRepository(Product)
     // private productRepository: Repository<Product>,
 
-    // @InjectRepository(ProductOrder)
-    // private productOrderRepository: Repository<ProductOrder>,
+    @InjectRepository(ProductOrder)
+    private productOrderRepository: Repository<ProductOrder>,
   ) {}
 
   // async createOrderWithProducts(orderDto: { orderDate: Date; products: { id: string; quantity: number }[] }): Promise<Order> {
@@ -56,6 +57,12 @@ export class OrderService {
     //   throw new NotFoundException(`Category with name "${orderDto.statusName}" not found`);
     // }
     // Step 0: Retrieve the default status ("UNCONFIRMED")
+
+    if (!orderDto.products || orderDto.products.length === 0) {
+      throw new BadRequestException('Order must contain at least one product');
+    }
+
+
     const defaultStatus = await this.statusRepository.findOne({
       where: { name: 'UNCONFIRMED' },
     });
@@ -81,6 +88,8 @@ export class OrderService {
 
       const savedOrder = await queryRunner.manager.save(order);
   
+      
+
       // Step 2: Loop through products and create ProductOrder entries
       for (const item of orderDto.products) {
         // Use a pessimistic write lock when retrieving the product
@@ -122,6 +131,228 @@ export class OrderService {
 
   async findAllOrders(): Promise<Order[]> {
     return this.orderRepository.find({ relations: ['productOrders', 'productOrders.product', 'status'] });
+  }
+
+  async findById(orderId: string): Promise<Order> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['productOrders', 'productOrders.product', 'status'],
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${orderId}" not found`);  // usunac ""
+    }
+
+    return order;
+  }
+
+  // zmienic na post chyba
+  // async findOrdersByUsername(username: string): Promise<Order[]> {
+  //   const orders = await this.orderRepository.find({
+  //     where: { username },
+  //     relations: ['productOrders', 'productOrders.product', 'status'],
+  //   });
+
+  //   if (orders.length === 0) {
+  //     throw new NotFoundException(`No orders found for username "${username}"`);
+  //   }
+
+  //   return orders;
+  // }
+
+  async findOrdersByStatusName(statusName: string): Promise<Order[]> {
+    const status = await this.statusRepository.findOne({ where: { name: statusName } });
+
+    if (!status) {
+      throw new NotFoundException(`Status with name "${statusName}" not found`);
+    }
+
+    const orders = await this.orderRepository.find({
+      where: { status },
+      relations: ['productOrders', 'productOrders.product', 'status'],
+    });
+
+    // czy nie lepiej zwracać pustą tablicę?
+    if (orders.length === 0) {
+      throw new NotFoundException(`No orders found with status "${statusName}"`);
+    }
+
+    return orders;
+  }
+
+  async removeProductFromOrder(orderId: string, productId: string): Promise<void> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['status'],
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${orderId}" not found`);
+    }
+
+    if (order.status.name !== 'UNCONFIRMED') {
+      throw new BadRequestException(`Cannot modify order with status "${order.status.name}". Only orders with "UNCONFIRMED" status can be modified.`);
+    }
+
+    const productOrder = await this.productOrderRepository.findOne({
+      where: { order: { id: orderId }, product: { id: productId } },
+      relations: ['order', 'product'],
+    });
+
+    if (!productOrder) {
+      throw new NotFoundException(`Product with ID "${productId}" in order ID "${orderId}" not found`);
+    }
+
+    await this.productOrderRepository.remove(productOrder);
+
+    const updatedOrder = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['productOrders'],
+    });
+
+    // Step 3: If the order's product list is empty, update the status to "CANCELLED"
+    if (!updatedOrder.productOrders || updatedOrder.productOrders.length === 0) {
+      const cancelledStatus = await this.statusRepository.findOne({
+        where: { name: 'CANCELLED' },
+      });
+
+      if (!cancelledStatus) {
+        throw new InternalServerErrorException('Status "CANCELLED" is missing from the database');
+      }
+
+      updatedOrder.status = cancelledStatus;
+      await this.orderRepository.save(updatedOrder);
+    }
+  }
+
+  async updateProductQuantityInOrder(orderId: string, productId: string, quantity: number): Promise<void> {
+    if ((UpdateProductOrderDto as any).id) {
+      throw new BadRequestException('Updating the primary key "id" is not allowed');
+    }
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        // Step 1: Find and lock the order with its status
+        const order = await queryRunner.manager.findOne(Order, {
+            where: { id: orderId },
+            relations: ['status'],
+            lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!order) {
+            throw new NotFoundException(`Order with ID "${orderId}" not found`);
+        }
+
+        if (order.status.name !== 'UNCONFIRMED') {
+            throw new BadRequestException(`Cannot modify order with status "${order.status.name}". Only orders with "UNCONFIRMED" status can be modified.`);
+        }
+
+        // Step 2: Find and lock the ProductOrder with the related Product
+        const productOrder = await queryRunner.manager.findOne(ProductOrder, {
+            where: { order: { id: orderId }, product: { id: productId } },
+            relations: ['product'],
+            lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!productOrder) {
+            throw new NotFoundException(`Product with ID "${productId}" in order ID "${orderId}" not found`);
+        }
+
+        const currentQuantity = productOrder.quantity;
+        const quantityDifference = quantity - currentQuantity;
+
+        // Step 3: Check if there is enough stock to adjust
+        if (quantityDifference > 0 && productOrder.product.stock < quantityDifference) {
+            throw new BadRequestException(`Insufficient stock for product ID ${productId} to adjust quantity to ${quantity}`);
+        }
+
+        // Step 4: Update product order quantity
+        productOrder.quantity = quantity;
+        await queryRunner.manager.save(productOrder);
+
+        // Step 5: Adjust product stock
+        productOrder.product.stock -= quantityDifference;
+        await queryRunner.manager.save(productOrder.product);
+
+        // Step 6: Commit the transaction
+        await queryRunner.commitTransaction();
+    } catch (error) {
+        // Rollback the transaction in case of error
+        await queryRunner.rollbackTransaction();
+        throw new InternalServerErrorException(`Failed to update product quantity: ${error.message}`);
+    } finally {
+        // Release the query runner
+        await queryRunner.release();
+    }
+  }
+
+  private isValidStatusTransition(currentStatus: string, newStatus: string): boolean {
+    const validTransitions = {
+      UNCONFIRMED: ['CONFIRMED', 'CANCELLED'],
+      CONFIRMED: ['COMPLETED', 'CANCELLED'],
+      COMPLETED: [],
+      CANCELLED: [],
+    };
+
+    return validTransitions[currentStatus]?.includes(newStatus) ?? false;
+  }
+
+  async updateOrder(orderId: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
+    if ((updateOrderDto as any).id) {
+      throw new BadRequestException('Updating the primary key "id" is not allowed');
+    }
+
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['status'],
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${orderId}" not found`);
+    }
+
+    // Update status if provided and validate the transition
+    if (updateOrderDto.statusName !== undefined) {
+      const newStatus = await this.statusRepository.findOne({
+        where: { name: updateOrderDto.statusName },
+      });
+
+      if (!newStatus) {
+        throw new NotFoundException(`Status "${updateOrderDto.statusName}" not found`);
+      }
+
+      if (!this.isValidStatusTransition(order.status.name, newStatus.name)) {
+        throw new BadRequestException(
+          `Invalid status transition from "${order.status.name}" to "${newStatus.name}"`,
+        );
+      }
+
+      if (newStatus.name === 'CONFIRMED') {
+        order.approvalDate = new Date();
+      }
+
+
+      order.status = newStatus;
+
+      
+    }
+
+    // Update other fields in `updateOrderDto`
+    if (updateOrderDto.username !== undefined) {
+      order.username = updateOrderDto.username;
+    }
+
+    if (updateOrderDto.email !== undefined) {
+      order.email = updateOrderDto.email;
+    }
+
+    if (updateOrderDto.phone !== undefined) {
+      order.phone = updateOrderDto.phone;
+    }
+
+    return await this.orderRepository.save(order);
   }
 
 
