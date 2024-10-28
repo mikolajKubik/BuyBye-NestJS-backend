@@ -1,6 +1,6 @@
 import { Optional } from "@nestjs/common";
 import { Type } from "class-transformer";
-import { IsArray, IsDateString, IsNotEmpty, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsArray, IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from "class-validator";
 import { CreateProductOrderDto } from "src/product-order/dto/create-product-order.dto";
 
 export class CreateOrderDto {
@@ -9,8 +9,22 @@ export class CreateOrderDto {
     // @IsString()
     id: string;
 
+    @IsOptional()
     @IsDateString()
-    orderDate: Date;
+    orderDate: Date; // | null;
+
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(255) 
+    username: string;
+
+    @IsEmail()
+    @MaxLength(255) 
+    email: string;
+
+    @IsString()
+    @MaxLength(50) // Length constraint for phone number (between 10 and 50 characters)
+    phone: string;
 
     @IsArray()
     @ValidateNested({ each: true })
@@ -18,6 +32,7 @@ export class CreateOrderDto {
     products: CreateProductOrderDto[];
 
     @IsString()
-    @IsNotEmpty()
+    // @IsNotEmpty()
+    @IsOptional()
     statusName: string;
 }

@@ -48,12 +48,20 @@ export class OrderService {
 
   async createOrderWithProducts(orderDto: CreateOrderDto): Promise<Order> {
     //Step 0: Get status
-    const status = await this.statusRepository.findOne({
-      where: { name: orderDto.statusName },
+    // const status = await this.statusRepository.findOne({
+    //   where: { name: orderDto.statusName },
+    // });
+
+    // if (!status) {
+    //   throw new NotFoundException(`Category with name "${orderDto.statusName}" not found`);
+    // }
+    // Step 0: Retrieve the default status ("UNCONFIRMED")
+    const defaultStatus = await this.statusRepository.findOne({
+      where: { name: 'UNCONFIRMED' },
     });
 
-    if (!status) {
-      throw new NotFoundException(`Category with name "${orderDto.statusName}" not found`);
+    if (!defaultStatus) {
+      throw new InternalServerErrorException('Default status "UNCONFIRMED" is missing from the database');
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -63,7 +71,14 @@ export class OrderService {
     try {
       // Step 1: Create the order
       const order = new Order();
-      order.orderDate = orderDto.orderDate;
+      //order.orderDate = orderDto.orderDate;
+      //const savedOrder = await queryRunner.manager.save(order);
+      order.approvalDate = null; // Initial approval date is null
+      order.username = orderDto.username;
+      order.email = orderDto.email;
+      order.phone = orderDto.phone;
+      order.status = defaultStatus;
+
       const savedOrder = await queryRunner.manager.save(order);
   
       // Step 2: Loop through products and create ProductOrder entries
@@ -106,7 +121,7 @@ export class OrderService {
   }
 
   async findAllOrders(): Promise<Order[]> {
-    return this.orderRepository.find({ relations: ['productOrders', 'productOrders.product'] });
+    return this.orderRepository.find({ relations: ['productOrders', 'productOrders.product', 'status'] });
   }
 
 
