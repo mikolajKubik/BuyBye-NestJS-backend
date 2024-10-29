@@ -7,15 +7,18 @@ export class UpdateOrderDto {
   @IsDateString()
   orderDate: Date; 
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MaxLength(255) 
   username: string;
 
+  @IsOptional()
   @IsEmail()
   @MaxLength(255) 
   email: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(50)
   phone: string;
