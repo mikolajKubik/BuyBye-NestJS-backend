@@ -16,7 +16,7 @@ export class CreateProductDto {
     name: string;
 
     @IsNumber()
-    @Min(0)
+    @Min(1)
     @Max(99999999)
     stock: number;
 
