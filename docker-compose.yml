@@ -1,32 +1,3 @@
-# services:
-#   aji-db:
-#     image: mysql:latest
-#     restart: unless-stopped
-#     environment:
-#       MYSQL_ROOT_PASSWORD: your_root_password
-#       MYSQL_DATABASE: aji-db
-#       MYSQL_USER: aji-user
-#       MYSQL_PASSWORD: your_password
-#     volumes:
-#       - db_data:/var/lib/mysql
-#     ports:
-#       - "3306:3306"
-
-#   phpmyadmin:
-#     platform: linux/arm64/v8
-#     image: phpmyadmin:latest
-#     restart: unless-stopped
-#     depends_on:
-#       - aji-db
-#     environment:
-#       PMA_HOST: aji-db
-#       MYSQL_ROOT_PASSWORD: your_root_password
-#     ports:
-#       - "8888:80"
-
-# volumes:
-#   db_data:
-
 services:
   aji-app:
     build:

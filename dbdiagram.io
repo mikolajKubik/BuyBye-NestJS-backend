@@ -4,6 +4,7 @@ Table Product {
     description text
     unit_price decimal(10, 2)
     unit_weight decimal(10, 2)
+    stock int
     category_id int [ref: > Category.id]
 }
 
@@ -15,7 +16,7 @@ Table Category {
 Table Order {
     id int [pk, increment]
     approval_date datetime [null]
-    status_id int [ref: > Order_Status.id]
+    status_id int [ref: > Status.id]
     username varchar(255)
     email varchar(255)
     phone varchar(50)
@@ -27,7 +28,7 @@ Table Order_Product {
     quantity int
 }
 
-Table Order_Status {
+Table Status {
     id int [pk, increment]
     name varchar(255)
 }
