@@ -48,6 +48,10 @@ export class OrderService {
   // }
 
   async createOrderWithProducts(orderDto: CreateOrderDto): Promise<Order> {
+    if ((orderDto as any).id) {
+      throw new BadRequestException('Updating the primary key "id" is not allowed');
+    }
+
 
     if (!orderDto.products || orderDto.products.length === 0) {
       throw new BadRequestException('Order must contain at least one product');
