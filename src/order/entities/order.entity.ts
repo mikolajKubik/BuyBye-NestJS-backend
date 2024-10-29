@@ -11,9 +11,6 @@ export class Order {
     @Column({ type: 'datetime', nullable: true })
     approvalDate: Date | null;
 
-    // @Column()
-    // orderDate: Date;
-
     @Column({ type: 'varchar', length: 255, nullable: false })
     username: string;
 

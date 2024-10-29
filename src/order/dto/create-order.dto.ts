@@ -11,7 +11,7 @@ export class CreateOrderDto {
 
     @IsOptional()
     @IsDateString()
-    orderDate: Date; // | null;
+    orderDate: Date; 
 
     @IsString()
     @IsNotEmpty()
@@ -23,7 +23,7 @@ export class CreateOrderDto {
     email: string;
 
     @IsString()
-    @MaxLength(50) // Length constraint for phone number (between 10 and 50 characters)
+    @MaxLength(50) 
     phone: string;
 
     @IsArray()

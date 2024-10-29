@@ -20,7 +20,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Makes ConfigModule available throughout the app without importing it in other modules
+      isGlobal: true, 
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

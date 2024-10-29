@@ -37,7 +37,6 @@ export class CategoryService implements OnModuleInit{
     ];
   
     for (const categoryData of predefinedCategories) {
-      // Transform plain object to instance of CreateCategoryDto
       const categoryDto = plainToInstance(CreateCategoryDto, categoryData);
   
       const existingCategory = await this.categoryRepository.findOne({
@@ -45,7 +44,7 @@ export class CategoryService implements OnModuleInit{
       });
   
       if (!existingCategory) {
-        await this.create(categoryDto); // Use the create method to handle insertion
+        await this.create(categoryDto); 
       }
     }
   }

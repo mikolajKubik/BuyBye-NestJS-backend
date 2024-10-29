@@ -22,7 +22,7 @@ export class ProductController {
 
   @Put(':id')
   async updateProduct(
-    @Param('id', ParseUUIDPipe) id: string, // Validates that `id` is a UUID
+    @Param('id', ParseUUIDPipe) id: string, 
     @Body(ValidationPipe) updateProductDto: UpdateProductDto
   ): Promise<Product> {
     return this.productService.update(id, updateProductDto);
@@ -30,7 +30,7 @@ export class ProductController {
 
   @Get(':id')
   async getProductById(
-    @Param('id', ParseUUIDPipe) id: string // Validates that `id` is a UUID
+    @Param('id', ParseUUIDPipe) id: string 
   ): Promise<Product> {
     return this.productService.findById(id);
   }

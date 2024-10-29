@@ -38,7 +38,6 @@ export class StatusService implements OnModuleInit{
     ];
   
     for (const statusData of predefinedStatuses) {
-      // Transform plain object to instance of CreateStatusDto
       const statusDto = plainToInstance(CreateStatusDto, statusData);
   
       const existingStatus = await this.statusRepository.findOne({
@@ -46,7 +45,7 @@ export class StatusService implements OnModuleInit{
       });
   
       if (!existingStatus) {
-        await this.create(statusDto); // Use the create method to handle insertion
+        await this.create(statusDto); 
       }
     }
   }

@@ -48,15 +48,6 @@ export class OrderService {
   // }
 
   async createOrderWithProducts(orderDto: CreateOrderDto): Promise<Order> {
-    //Step 0: Get status
-    // const status = await this.statusRepository.findOne({
-    //   where: { name: orderDto.statusName },
-    // });
-
-    // if (!status) {
-    //   throw new NotFoundException(`Category with name "${orderDto.statusName}" not found`);
-    // }
-    // Step 0: Retrieve the default status ("UNCONFIRMED")
 
     if (!orderDto.products || orderDto.products.length === 0) {
       throw new BadRequestException('Order must contain at least one product');
@@ -76,10 +67,7 @@ export class OrderService {
     await queryRunner.startTransaction();
   
     try {
-      // Step 1: Create the order
       const order = new Order();
-      //order.orderDate = orderDto.orderDate;
-      //const savedOrder = await queryRunner.manager.save(order);
       order.approvalDate = null; // Initial approval date is null
       order.username = orderDto.username;
       order.email = orderDto.email;
@@ -90,9 +78,7 @@ export class OrderService {
   
       
 
-      // Step 2: Loop through products and create ProductOrder entries
       for (const item of orderDto.products) {
-        // Use a pessimistic write lock when retrieving the product
         const product = await queryRunner.manager.findOne(Product, {
           where: { id: item.id },
           lock: { mode: 'pessimistic_write' }, // Ensures exclusive access
@@ -103,11 +89,9 @@ export class OrderService {
           throw new Error(`Insufficient stock for product ID ${item.id}`);
         }
   
-        // Deduct stock and save the product
         product.stock -= item.quantity;
         await queryRunner.manager.save(product);
   
-        // Create and save ProductOrder entry
         const productOrder = new ProductOrder();
         productOrder.order = savedOrder;
         productOrder.product = product;
@@ -116,15 +100,12 @@ export class OrderService {
         await queryRunner.manager.save(productOrder);
       }
   
-      // Step 3: Commit the transaction if everything succeeds
       await queryRunner.commitTransaction();
       return savedOrder;
     } catch (error) {
-      // Step 4: Rollback the transaction on error
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(`Failed to create order: ${error.message}`);
     } finally {
-      // Step 5: Release the query runner after transaction
       await queryRunner.release();
     }
   }
@@ -146,20 +127,6 @@ export class OrderService {
     return order;
   }
 
-  // zmienic na post chyba
-  // async findOrdersByUsername(username: string): Promise<Order[]> {
-  //   const orders = await this.orderRepository.find({
-  //     where: { username },
-  //     relations: ['productOrders', 'productOrders.product', 'status'],
-  //   });
-
-  //   if (orders.length === 0) {
-  //     throw new NotFoundException(`No orders found for username "${username}"`);
-  //   }
-
-  //   return orders;
-  // }
-
   async findOrdersByStatusName(statusName: string): Promise<Order[]> {
     const status = await this.statusRepository.findOne({ where: { name: statusName } });
 
@@ -172,7 +139,6 @@ export class OrderService {
       relations: ['productOrders', 'productOrders.product', 'status'],
     });
 
-    // czy nie lepiej zwracać pustą tablicę?
     if (orders.length === 0) {
       throw new NotFoundException(`No orders found with status "${statusName}"`);
     }
@@ -210,7 +176,6 @@ export class OrderService {
       relations: ['productOrders'],
     });
 
-    // Step 3: If the order's product list is empty, update the status to "CANCELLED"
     if (!updatedOrder.productOrders || updatedOrder.productOrders.length === 0) {
       const cancelledStatus = await this.statusRepository.findOne({
         where: { name: 'CANCELLED' },
@@ -234,7 +199,6 @@ export class OrderService {
     await queryRunner.startTransaction();
 
     try {
-        // Step 1: Find and lock the order with its status
         const order = await queryRunner.manager.findOne(Order, {
             where: { id: orderId },
             relations: ['status'],
@@ -249,7 +213,6 @@ export class OrderService {
             throw new BadRequestException(`Cannot modify order with status "${order.status.name}". Only orders with "UNCONFIRMED" status can be modified.`);
         }
 
-        // Step 2: Find and lock the ProductOrder with the related Product
         const productOrder = await queryRunner.manager.findOne(ProductOrder, {
             where: { order: { id: orderId }, product: { id: productId } },
             relations: ['product'],
@@ -263,27 +226,21 @@ export class OrderService {
         const currentQuantity = productOrder.quantity;
         const quantityDifference = quantity - currentQuantity;
 
-        // Step 3: Check if there is enough stock to adjust
         if (quantityDifference > 0 && productOrder.product.stock < quantityDifference) {
             throw new BadRequestException(`Insufficient stock for product ID ${productId} to adjust quantity to ${quantity}`);
         }
 
-        // Step 4: Update product order quantity
         productOrder.quantity = quantity;
         await queryRunner.manager.save(productOrder);
 
-        // Step 5: Adjust product stock
         productOrder.product.stock -= quantityDifference;
         await queryRunner.manager.save(productOrder.product);
 
-        // Step 6: Commit the transaction
         await queryRunner.commitTransaction();
     } catch (error) {
-        // Rollback the transaction in case of error
         await queryRunner.rollbackTransaction();
         throw new InternalServerErrorException(`Failed to update product quantity: ${error.message}`);
     } finally {
-        // Release the query runner
         await queryRunner.release();
     }
   }
@@ -313,7 +270,6 @@ export class OrderService {
       throw new NotFoundException(`Order with ID "${orderId}" not found`);
     }
 
-    // Update status if provided and validate the transition
     if (updateOrderDto.statusName !== undefined) {
       const newStatus = await this.statusRepository.findOne({
         where: { name: updateOrderDto.statusName },
@@ -339,7 +295,6 @@ export class OrderService {
       
     }
 
-    // Update other fields in `updateOrderDto`
     if (updateOrderDto.username !== undefined) {
       order.username = updateOrderDto.username;
     }

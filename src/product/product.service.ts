@@ -16,11 +16,7 @@ export class ProductService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  // async create(product: Partial<Product>): Promise<Product> {
-  //   return this.productRepository.save(product);
-  // }
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    // Find the category by its name from the DTO
     const category = await this.categoryRepository.findOne({
       where: { name: createProductDto.categoryName },
     });
@@ -29,10 +25,9 @@ export class ProductService {
       throw new NotFoundException(`Category with name "${createProductDto.categoryName}" not found`);
     }
 
-    // Create the product and associate the found category
     const product = this.productRepository.create({
       ...createProductDto,
-      category, // Assign the found category to the product
+      category, 
     });
 
     return await this.productRepository.save(product);
@@ -43,19 +38,16 @@ export class ProductService {
   }
 
   async update(productId: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    // Step 0: Check if `id` is present in `updateProductDto` and throw an error if it is
     if (updateProductDto.id) {
       throw new BadRequestException('Updating the primary key "id" is not allowed');
     }
   
-    // Step 1: Find the existing product by ID
     const product = await this.productRepository.findOne({ where: { id: productId }, relations: ['category'] });
     
     if (!product) {
       throw new NotFoundException(`Product with ID "${productId}" not found`);
     }
   
-    // Step 2: Check if `categoryName` is provided and find the new category if necessary
     if (updateProductDto.categoryName !== undefined) {
       const category = await this.categoryRepository.findOne({ where: { name: updateProductDto.categoryName } });
   
@@ -63,11 +55,9 @@ export class ProductService {
         throw new NotFoundException(`Category with name "${updateProductDto.categoryName}" not found`);
       }
   
-      // Update the product's category
       product.category = category;
     }
   
-    // Step 3: Update the product with the new values from `updateProductDto`
     if (updateProductDto.name !== undefined) {
       product.name = updateProductDto.name;
     }
@@ -80,7 +70,6 @@ export class ProductService {
       product.stock = updateProductDto.stock;
     }
   
-    // Step 4: Save the updated product
     return await this.productRepository.save(product);
   }
 

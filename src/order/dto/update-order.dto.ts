@@ -24,4 +24,4 @@ export class UpdateOrderDto {
   @IsOptional()
   statusName: string;
 
-} //  extends PartialType(CreateOrderDto)
+} 
