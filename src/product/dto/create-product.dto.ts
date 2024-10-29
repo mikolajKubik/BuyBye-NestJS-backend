@@ -15,6 +15,15 @@ export class CreateProductDto {
     @MaxLength(255)
     name: string;
 
+    @IsString()
+    @MaxLength(255)
+    description: string;
+
+    @IsNumber()
+    @Min(0)
+    @Max(99999999)
+    weight: number;
+
     @IsNumber()
     @Min(1)
     @Max(99999999)
