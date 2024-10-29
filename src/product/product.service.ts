@@ -17,6 +17,10 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+    if (createProductDto.id) {
+      throw new BadRequestException('Predefining the primary key "id" is not allowed');
+    }
+
     const category = await this.categoryRepository.findOne({
       where: { name: createProductDto.categoryName },
     });
