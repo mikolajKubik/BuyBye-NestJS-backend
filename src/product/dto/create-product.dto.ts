@@ -19,9 +19,9 @@ export class CreateProductDto {
     @MaxLength(255)
     description: string;
 
-    @IsNumber()
-    @Min(0)
-    @Max(99999999)
+    @IsNumber({ maxDecimalPlaces: 2 }) // , { message: 'Price can have up to 2 decimal places' }
+    @Min(0) // , { message: 'Price must be a positive number' }
+    @Max(99999999.99)
     weight: number;
 
     @IsNumber()
