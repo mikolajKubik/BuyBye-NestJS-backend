@@ -80,7 +80,7 @@ export class OrderService {
         }
         if (product.stock < item.quantity) {
           throw new InvalidRequestApplicationException(
-            `Insufficient stock for product ID ${item.id} to add quantity ${item.quantity}`,
+            `Insufficient stock for product ID ${item.id} to add quantity ${item.quantity}, only ${product.stock} available`,
             `/products/${item.id}`
           )
         }
@@ -100,6 +100,14 @@ export class OrderService {
       return savedOrder;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+
+      if (
+        error instanceof NotFoundApplicationException ||
+        error instanceof InvalidRequestApplicationException
+      ) {
+        throw error;
+      }
+
       throw new DatabaseException(
         `Failed to create order: ${error.message}`,
         '/orders'
@@ -320,6 +328,14 @@ export class OrderService {
         await queryRunner.commitTransaction();
     } catch (error) {
         await queryRunner.rollbackTransaction();
+
+        if (
+          error instanceof NotFoundApplicationException ||
+          error instanceof InvalidRequestApplicationException
+        ) {
+          throw error;
+        }
+
         throw new DatabaseException(
             `Failed to update product quantity in order: ${error.message}`,
             `/orders/${orderId}`
