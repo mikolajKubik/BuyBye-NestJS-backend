@@ -1,11 +1,38 @@
 {
 	"info": {
-		"_postman_id": "b07d17c6-3e65-4717-84c4-24ec98cd1123",
+		"_postman_id": "a99c6f30-5843-44a0-bac4-31ceb281b085",
 		"name": "AJI-backend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33936226"
+		"_exporter_id": "39339157"
 	},
 	"item": [
+		{
+			"name": "products",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    //\"name\": \"Bakugan\",\n    \"description\": \"Zabawka dla dzieci\",\n    \"price\": 25.50,\n    \"weight\": 100,\n    \"categoryName\": \"Toys\",\n    \"stock\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/products",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "products",
 			"request": {
@@ -25,13 +52,32 @@
 			"response": []
 		},
 		{
-			"name": "product update",
+			"name": "products/id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/products/a89b12df-6a5c-4f39-84db-ac716f7f9044",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"products",
+						"a89b12df-6a5c-4f39-84db-ac716f7f9044"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "products",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \n  \"price\": 6569.99\n  \n}",
+					"raw": "{\n    \"name\": \"Strepsils INTESIVEE\",\n    \"description\": \"Les o silnym działaniu przeciwbólowym i przeciwzapalnym w leczeniu bólu gardła\",\n    \"price\": 10,\n    \"weight\": 9999999,\n    \"categoryName\": \"Clothing\",\n    \"stock\": 10000\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -39,172 +85,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/products/960fea51-bf5a-4d2b-bce6-fb0175e49a47",
+					"raw": "localhost:3000/products/99495646-5358-4e4b-a003-01a24e24d267",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
 						"products",
-						"960fea51-bf5a-4d2b-bce6-fb0175e49a47"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "product add",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"chuj2\",\n    \"description\": \"This is a sample product description.\",\n    \"price\": 69.99,\n    \"weight\": 1.99,\n    \"categoryName\": \"Books\",\n    \"stock\": 5\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/products",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"products"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "product available",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \n    \"isAvailable\": false\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/products/2310f9b4-6dcb-40ee-ab07-20232db4f19d/available",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"products",
-						"2310f9b4-6dcb-40ee-ab07-20232db4f19d",
-						"available"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "status",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:3000/status",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"status"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "order",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"john chuj\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"1234567890\",\n    \"products\": [\n        {\n            \"id\": \"87bc1ab5-973c-4710-94da-5180650787b3\",\n            \"quantity\": 1\n        },\n        {\n            \"id\": \"78df76aa-548c-402a-ac9c-87df3fbecf0d\",\n            \"quantity\": 1\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/orders",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"orders"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:3000/orders NEW",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"orderDate\": \"2024-10-27T10:30:00Z\",\n  \"products\": [\n    { \"id\": \"8f33a5e7-bb7e-4286-aea7-79a58532a833\", \"quantity\": 1 }\n  ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/orders",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"orders"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:3000/products NEW",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"name\": \"Product 3\",\n  \"price\": 97.59,\n  \"stock\": 1,\n  \"categoryName\": \"Toyss\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/products",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"products"
+						"99495646-5358-4e4b-a003-01a24e24d267"
 					]
 				}
 			},
@@ -241,7 +129,34 @@
 			"response": []
 		},
 		{
-			"name": "order",
+			"name": "orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Maciek123\",\n    \"email\": \"maciek.doe@example.com\",\n    \"phone\": \"212312231\",\n    \"products\": [\n        {\n            \"id\": \"99495646-5358-4e4b-a003-01a24e24d267\",\n            \"quantity\": 4\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/orders",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "orders",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -271,80 +186,17 @@
 			"response": []
 		},
 		{
-			"name": "order:id",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"name": "status",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"john_doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"1234567890\",\n    \"products\": [\n        {\n            \"id\": \"87bc1ab5-973c-4710-94da-5180650787b3\",\n            \"quantity\": 2\n        },\n        {\n            \"id\": \"78df76aa-548c-402a-ac9c-87df3fbecf0d\",\n            \"quantity\": 1\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "localhost:3000/orders/e834edb7-b941-4927-8101-61983306f974",
+					"raw": "localhost:3000/status",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"orders",
-						"e834edb7-b941-4927-8101-61983306f974"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "order/username:id",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"john_doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"1234567890\",\n    \"products\": [\n        {\n            \"id\": \"87bc1ab5-973c-4710-94da-5180650787b3\",\n            \"quantity\": 2\n        },\n        {\n            \"id\": \"78df76aa-548c-402a-ac9c-87df3fbecf0d\",\n            \"quantity\": 1\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/orders/e834edb7-b941-4927-8101-61983306f975",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"orders",
-						"e834edb7-b941-4927-8101-61983306f975"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "list orders by status",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:3000/orders/status",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"orders",
 						"status"
 					]
 				}
@@ -352,58 +204,27 @@
 			"response": []
 		},
 		{
-			"name": "DELETE ENDPOINT",
+			"name": "orders/status/<statusName>",
 			"request": {
-				"method": "DELETE",
+				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/orders/5ff934d2-f08f-4ad7-8268-696d26dd8e82/products/87bc1ab5-973c-4710-94da-5180650787b3",
+					"raw": "localhost:3000/orders/status/UNCONFIRMED",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
 						"orders",
-						"5ff934d2-f08f-4ad7-8268-696d26dd8e82",
-						"products",
-						"87bc1ab5-973c-4710-94da-5180650787b3"
+						"status",
+						"UNCONFIRMED"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "PUT update qunatity in order ",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"quantity\": 80,\n  \"chuj\": 120\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:3000/orders/708b8ad4-3652-4484-95ca-4bfb75bb43f0/products/78df76aa-548c-402a-ac9c-87df3fbecf0d",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"orders",
-						"708b8ad4-3652-4484-95ca-4bfb75bb43f0",
-						"products",
-						"78df76aa-548c-402a-ac9c-87df3fbecf0d"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "put update order",
+			"name": "orders/id",
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -427,6 +248,14 @@
 						"708b8ad4-3652-4484-95ca-4bfb75bb43f0"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "orders/username/<username>",
+			"request": {
+				"method": "GET",
+				"header": []
 			},
 			"response": []
 		}
