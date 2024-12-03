@@ -1,6 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
@@ -24,8 +23,6 @@ export class CategoryService implements OnModuleInit{
 
   async findAll(): Promise<Category[]> {
     return await this.categoryRepository.find({ relations: ['products'] });
-
-    // return await this.categoryRepository.find();
   }
 
   async seedCategories() {

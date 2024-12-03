@@ -103,7 +103,7 @@ _PUT /orders/:id <- only ORDER entity_
 }
 ```
 _GET /orders/status/:statusNAME_
-```UNCOMFIRMED CONFIRMED COMPLETED CANCELLED```
+```UNCONFIRMED CONFIRMED COMPLETED CANCELLED```
 PUT /orders/:orderUUID/products/:productUUID <- edit product stock in the eorder
 ```json
 {

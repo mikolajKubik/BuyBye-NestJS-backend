@@ -6,6 +6,7 @@ import { Product } from './entities/product.entity';
 
 @Controller('products')
 export class ProductController {
+
   constructor(private readonly productService: ProductService) {}
 
   @Get()
@@ -34,5 +35,5 @@ export class ProductController {
   ): Promise<Product> {
     return this.productService.findById(id);
   }
-  
+
 }

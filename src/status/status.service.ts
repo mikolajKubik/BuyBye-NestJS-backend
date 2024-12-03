@@ -25,8 +25,6 @@ export class StatusService implements OnModuleInit{
 
   async findAll(): Promise<Status[]> {
     return await this.statusRepository.find({ relations: ['orders'] });
-
-    // return await this.categoryRepository.find();
   }
 
   async seedStatuses() {

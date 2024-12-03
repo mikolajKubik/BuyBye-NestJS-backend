@@ -11,5 +11,4 @@ export class StatusController {
   findAll() {
     return this.statusService.findAll();
   }
-  
 }

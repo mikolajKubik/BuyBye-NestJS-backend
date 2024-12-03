@@ -21,25 +21,33 @@ export class OrderController {
     return this.orderService.createOrderWithProducts(createOrderDto);
   }
 
-  @Get(':id')
-  async findOrderById(
-    @Param('id', ParseUUIDPipe) id: string, // Ensures `id` is a valid UUID
+  @Put(':id')
+  async updateOrder(
+    @Param('id', ParseUUIDPipe) orderId: string,
+    @Body(ValidationPipe) updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
-    return this.orderService.findById(id);
+    return await this.orderService.updateOrder(orderId, updateOrderDto);
   }
-
-  // @Get('username/:username')
-  // async findOrdersByUsername(
-  //   @Param('username') username: string,
-  // ): Promise<Order[]> {
-  //   return this.orderService.findOrdersByUsername(username);
-  // }
 
   @Get('status/:statusName')
   async findOrdersByStatusName(
     @Param('statusName') statusName: string,
   ): Promise<Order[]> {
     return this.orderService.findOrdersByStatusName(statusName);
+  }
+
+  @Get('username/:username')
+  async findOrdersByUsername(
+    @Param('username') username: string,
+  ): Promise<Order[]> {
+    return this.orderService.findOrdersByUsername(username);
+  }
+
+  @Get(':id')
+  async findOrderById(
+    @Param('id', ParseUUIDPipe) id: string, // Ensures `id` is a valid UUID
+  ): Promise<Order> {
+    return this.orderService.findById(id);
   }
 
   @Delete(':orderId/products/:productId')
@@ -58,12 +66,5 @@ export class OrderController {
   ): Promise<void> {
     await this.orderService.updateProductQuantityInOrder(orderId, productId, updateProductOrderDto.quantity);
   }
-  
-  @Put(':id')
-  async updateOrder(
-    @Param('id', ParseUUIDPipe) orderId: string,
-    @Body(ValidationPipe) updateOrderDto: UpdateOrderDto,
-  ): Promise<Order> {
-    return await this.orderService.updateOrder(orderId, updateOrderDto);
-  }
+
 }
