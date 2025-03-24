@@ -1,29 +1,58 @@
-# AJI - Zadanie 3
-Projekt na aplikacje w językach interpretowanych.
-### RUN docker
-```bash
-docker compose up -d #docker compose down -v <- to stop and remove db volume
-```
-### RUN local
-Node version: v20.18.0
-1. Install dependancies:
-    ```bash
-    npm i -g @nestjs/cli
-    npm install --save @nestjs/typeorm typeorm mysql2
-    npm i --save class-validator class-transformer
-    npm i --save @nestjs/config
-    ```  
-2. Deploy sql database
-3. Run the app
-    ```bash
-    # watch mode
-    $ npm run start:dev
+# 🛍️ Buy&Bye
 
-    # production mode
-    $ npm run start:prod
-    ```
-### ENV
+**Buy&Bye** is a simple **CRUD-based store backend** built with **NestJS** (Node.js framework).  
+It provides a REST API for managing **products**, **categories**, and **orders**, and includes a **Docker setup** with **Oracle MySQL** for quick deployment.
+
+---
+
+## 🐳 Run with Docker (NestJS + Oracle MySQL)
+
+Spin up the full backend environment (API + Oracle MySQL DB):
+
 ```bash
+docker compose up -d
+# To stop and remove DB volume:
+docker compose down -v
+```
+
+This setup includes:
+- NestJS API server
+- Oracle MySQL (community edition) database
+- Pre-configured environment for local development
+
+---
+
+## 💻 Run Locally
+
+> Node.js version: `v20.18.0`
+
+### 1️⃣ Install dependencies:
+
+```bash
+npm i -g @nestjs/cli
+npm install --save @nestjs/typeorm typeorm mysql2
+npm i --save class-validator class-transformer
+npm i --save @nestjs/config
+```
+
+### 2️⃣ Deploy Oracle MySQL (locally or via Docker)  
+Ensure the Oracle MySQL container is running with the same env variables.
+
+### 3️⃣ Start the app
+
+```bash
+# Development mode (with file watching)
+npm run start:dev
+
+# Production mode
+npm run start:prod
+```
+
+---
+
+## ⚙️ Environment Variables (`.env`)
+
+```env
 PORT=3000
 
 DATABASE_HOST=localhost
@@ -34,22 +63,33 @@ DATABASE_NAME=aji-db
 
 TYPEORM_SYNC=true
 ```
-### Database schema
 
-![Database Schema](./diagram.svg)
+---
 
-Refer to the database schema code in dbdiagram.io
-### API
+## 🗂️ Database Schema
 
-_GET /status_
+![Database Schema](./diagram.svg)  
+Schema available via [dbdiagram.io](https://dbdiagram.io)
 
-_GET /categories_
+---
 
-_GET /products_
+## 🧪 API Endpoints
 
-_GET /products/:UUID_
+### 📡 Status
+`GET /status`
 
-_POST /products_
+---
+
+### 🏷️ Categories
+`GET /categories`
+
+---
+
+### 📦 Products
+
+- `GET /products`
+- `GET /products/:UUID`
+- `POST /products`
 ```json
 {
     "name": "example2",
@@ -60,7 +100,8 @@ _POST /products_
     "stock": 10
 }
 ```
-_PUT /products:UUID_
+
+- `PUT /products/:UUID`
 ```json
 {
     "name": "example2",
@@ -71,11 +112,14 @@ _PUT /products:UUID_
     "stock": 10
 }
 ```
-_GET /orders_
 
-_GET /orders/:UUID_
+---
 
-_POST /orders_
+### 📑 Orders
+
+- `GET /orders`
+- `GET /orders/:UUID`
+- `POST /orders`
 ```json
 {
     "username": "john doe",
@@ -93,7 +137,8 @@ _POST /orders_
     ]
 }
 ```
-_PUT /orders/:id <- only ORDER entity_
+
+- `PUT /orders/:id` (only ORDER entity)
 ```json
 {
   "username": "Updated User",
@@ -102,14 +147,17 @@ _PUT /orders/:id <- only ORDER entity_
   "statusName": "UNCONFIRMED"
 }
 ```
-_GET /orders/status/:statusNAME_
-```UNCONFIRMED CONFIRMED COMPLETED CANCELLED```
-PUT /orders/:orderUUID/products/:productUUID <- edit product stock in the eorder
+
+- `GET /orders/status/:statusNAME`  
+  Status options: `UNCONFIRMED`, `CONFIRMED`, `COMPLETED`, `CANCELLED`
+
+- `PUT /orders/:orderUUID/products/:productUUID`  
+  Edit product quantity in the order:
 ```json
 {
   "quantity": 80
 }
 ```
-_DELETE /orders/:orderUUID/products/:productUUID_ <- entirelly remove product from the order
 
-
+- `DELETE /orders/:orderUUID/products/:productUUID`  
+  Remove a product entirely from an order.
